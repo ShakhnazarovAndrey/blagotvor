@@ -1,0 +1,198 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import { img } from '../data/images';
+import { partners, thanks, letters } from '../data/site';
+---
+
+<BaseLayout title="Благодарность" description="Слова благодарности партнёрам, донорам и волонтёрам фонда «Люди Вместе».">
+  <PageHero title="Спасибо, что вы с нами" crumb="Благодарность" lead="Благодаря вам мы можем помогать, поддерживать и вдохновлять." />
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="words" data-reveal="scale">
+        <span class="words__heart" data-float><Icon name="heart" size={44} /></span>
+        <p class="eyebrow">Слова благодарности</p>
+        <p class="words__big" data-scrub-text>
+          Каждое доброе дело начинается с участия. Вы — часть большой команды, которая делает мир добрее. Спасибо за
+          доверие, за отзывчивость и за то, что верите в людей.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow="Наши партнёры" title="Те, кто делает добро возможным" center />
+      <div class="partners" data-stagger>
+        {
+          partners.map((p) => (
+            <div class="partner" data-tilt>
+              <Image src={img(p.logo)} alt={p.name} height={72} />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="people" data-stagger>
+        {
+          thanks.map((t) => (
+            <figure class="person">
+              <div class="person__img">
+                <Image src={img(t.image)} alt={t.name} widths={[400, 700]} sizes="(max-width: 760px) 100vw, 50vw" />
+              </div>
+              <figcaption>
+                <b>{t.name}</b> — {t.role}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow="Взаимная благодарность" title="Письма, которые греют">
+        <a href="/about/" class="btn btn--ghost" data-magnetic>О фонде <Icon name="arrow" class="arrow" /></a>
+      </SectionHead>
+      <div class="strip" data-stagger>
+        {
+          letters.slice(0, 4).map((l) => (
+            <a href={img(l).src} class="strip__item" data-lightbox="thanks-letters">
+              <Image src={img(l)} alt="Благодарственное письмо" widths={[300, 500]} sizes="25vw" />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .words {
+    position: relative;
+    background: var(--sun);
+    border-radius: var(--r-lg);
+    padding: clamp(36px, 6vw, 88px);
+    overflow: hidden;
+  }
+  .words .eyebrow::before {
+    background: #fff;
+  }
+  .words__big {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.7rem);
+    line-height: 1.25;
+    font-weight: 500;
+    max-width: 26ch;
+    margin: 0;
+  }
+  .words__heart {
+    position: absolute;
+    right: clamp(24px, 5vw, 72px);
+    top: clamp(24px, 4vw, 56px);
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--sun);
+    display: grid;
+    place-items: center;
+  }
+  .partners {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .partner {
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    aspect-ratio: 16 / 9;
+    display: grid;
+    place-items: center;
+    padding: 32px;
+    box-shadow: var(--shadow);
+  }
+  .partner :global(img) {
+    max-height: 72px;
+    width: auto;
+  }
+  .people {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .person {
+    margin: 0;
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .person__img {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+  .person__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s var(--ease);
+  }
+  .person:hover .person__img :global(img) {
+    transform: scale(1.05);
+  }
+  .person figcaption {
+    padding: 22px 26px;
+    color: var(--ink-2);
+  }
+  .person b {
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .strip__item {
+    display: block;
+    background: #fff;
+    padding: 10px;
+    border-radius: var(--r-sm);
+    box-shadow: var(--shadow);
+    transition: transform 0.6s var(--ease);
+  }
+  .strip__item:hover {
+    transform: translateY(-8px) rotate(-1.5deg);
+  }
+  .strip__item :global(img) {
+    aspect-ratio: 1 / 1.41;
+    object-fit: cover;
+    object-position: top;
+    width: 100%;
+  }
+  @media (max-width: 760px) {
+    .partners {
+      grid-template-columns: 1fr;
+    }
+    .people {
+      grid-template-columns: 1fr;
+    }
+    .strip {
+      grid-template-columns: 1fr 1fr;
+    }
+    .words__heart {
+      display: none;
+    }
+  }
+</style>

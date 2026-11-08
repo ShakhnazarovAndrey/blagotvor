@@ -1,0 +1,181 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { documents, requisites } from '../data/site';
+const keyReq = requisites.filter((r) => ['ИНН', 'КПП', 'ОГРН', 'Расчётный счёт'].includes(r.label));
+---
+
+<BaseLayout title="Отчёты и документы" description="Документы и отчёты благотворительного фонда «Люди Вместе»: ЕГРЮЛ, устав, свидетельство, реквизиты.">
+  <PageHero
+    title="Документы и отчёты"
+    crumb="Отчёты"
+    lead="Мы открыто рассказываем, как используются собранные средства и какие результаты достигаем вместе с вами."
+  />
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="docs" data-stagger>
+        {
+          documents.map((d) => (
+            <a href={d.file} class="doc" target="_blank" rel="noopener" data-tilt>
+              <span class="doc__badge">PDF</span>
+              <span class="doc__icon">
+                <Icon name="file" size={40} />
+              </span>
+              <h3>{d.title}</h3>
+              <span class="doc__size">{d.size}</span>
+              <span class="doc__dl">
+                <Icon name="download" size={20} /> Открыть
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="trust" data-reveal>
+        <div>
+          <p class="eyebrow">Прозрачность</p>
+          <h2>Каждый перевод — в целевой фонд проекта</h2>
+          <p class="lead">Мы публикуем учредительные документы и реквизиты, чтобы вы были уверены в каждом пожертвовании.</p>
+        </div>
+        <dl class="trust__req">
+          {
+            keyReq.map((r) => (
+              <div>
+                <dt>{r.label}</dt>
+                <dd>{r.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .docs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .doc {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: 32px 28px;
+    box-shadow: var(--shadow);
+    min-height: 280px;
+    overflow: hidden;
+    transition: background 0.4s;
+  }
+  .doc:hover {
+    background: var(--sun);
+  }
+  .doc__badge {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    background: var(--coral);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .doc__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: var(--bg);
+    display: grid;
+    place-items: center;
+    margin-bottom: 20px;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s;
+  }
+  .doc:hover .doc__icon {
+    transform: rotate(-8deg) scale(1.08);
+    background: #fff;
+  }
+  .doc__size {
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+  .doc:hover .doc__size {
+    color: var(--ink-2);
+  }
+  .doc__dl {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+  }
+  .trust {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--r-lg);
+    padding: clamp(32px, 5vw, 64px);
+  }
+  .trust .eyebrow,
+  .trust .lead {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .trust .lead {
+    margin-top: 16px;
+  }
+  .trust__req {
+    margin: 0;
+    display: grid;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .trust__req div {
+    background: var(--ink);
+    padding: 16px 20px;
+  }
+  .trust__req dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sun);
+    font-weight: 800;
+  }
+  .trust__req dd {
+    margin: 4px 0 0;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+  }
+  @media (max-width: 1000px) {
+    .docs {
+      grid-template-columns: 1fr 1fr;
+    }
+    .trust {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .docs {
+      grid-template-columns: 1fr;
+    }
+    .doc {
+      min-height: 0;
+    }
+  }
+</style>

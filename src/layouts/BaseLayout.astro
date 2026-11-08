@@ -1,0 +1,167 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Overlays from '../components/Overlays.astro';
+import { site } from '../data/site';
+import { img } from '../data/images';
+import { getImage } from 'astro:assets';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: ImageMetadata;
+  article?: boolean;
+}
+const { title, description = site.description, image, article = false } = Astro.props;
+const fullTitle = title ? `${title} — БФ «Люди Вместе»` : `${site.name} — ${site.slogan}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
+const og = await getImage({ src: image ?? img('banner_8.jpg'), width: 1200, format: 'jpg' });
+const ogUrl = new URL(og.src, Astro.site ?? site.url).href;
+const favicon = await getImage({ src: img('cropped-avatar-lyudi-vmeste-270x270.jpg'), width: 192, format: 'png' });
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NGO',
+  name: site.name,
+  alternateName: 'БФ «Люди Вместе»',
+  url: site.url,
+  email: site.email,
+  telephone: site.phone,
+  foundingDate: String(site.founded),
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Санкт-Петербург',
+    streetAddress: '6 линия В.О., д. 59, к. 1, лит. Б, офис 213А',
+    addressCountry: 'RU',
+  },
+  sameAs: site.socials.map((s) => s.href),
+};
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={favicon.src} type="image/png" />
+    <link rel="apple-touch-icon" href={favicon.src} />
+    <meta name="theme-color" content="#fbf7ef" />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('js-anim');
+        try {
+          if (!sessionStorage.getItem('lv-loaded')) d.classList.add('is-loading');
+        } catch (e) {}
+        // страховка: если скрипты не загрузились — показываем контент
+        setTimeout(function () {
+          if (!window.__lvReady) d.classList.remove('js-anim', 'is-loading');
+        }, 4000);
+      })();
+    </script>
+    <ClientRouter fallback="swap" />
+  </head>
+  <body>
+    <div class="preloader" aria-hidden="true">
+      <div class="preloader__inner">
+        <svg class="preloader__mark" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="32" fill="#ffd12e"></circle>
+          <g fill="none" stroke="#16161b" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23.6 27.4a5.4 5.4 0 1 1 .9-8.3"></path>
+            <path d="M40.4 27.4a5.4 5.4 0 1 0-.9-8.3"></path>
+            <circle cx="32" cy="26" r="6.3"></circle>
+            <path d="M20.6 44h-6.1a1.4 1.4 0 0 1-1.4-1.7l1.5-6.1a4 4 0 0 1 3.9-3h4.1"></path>
+            <path d="M43.4 44h6.1a1.4 1.4 0 0 0 1.4-1.7l-1.5-6.1a4 4 0 0 0-3.9-3h-4.1"></path>
+            <path d="M22.4 49.6h19.2a1.4 1.4 0 0 0 1.4-1.7l-1.8-7.4a4.4 4.4 0 0 0-4.3-3.4h-9.8a4.4 4.4 0 0 0-4.3 3.4L21 47.9a1.4 1.4 0 0 0 1.4 1.7Z"></path>
+          </g>
+        </svg>
+        <div class="preloader__word"><span>Люди</span> <span>Вместе</span></div>
+      </div>
+    </div>
+
+    <a class="skip" href="#main">Перейти к содержанию</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <Overlays />
+
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .skip {
+    position: fixed;
+    top: -100px;
+    left: 16px;
+    z-index: 200;
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 10px;
+  }
+  .skip:focus {
+    top: 16px;
+  }
+
+  .preloader {
+    display: none;
+  }
+  html.is-loading .preloader {
+    display: grid;
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: var(--sun);
+    place-items: center;
+  }
+  html.is-loading body {
+    overflow: hidden;
+  }
+  .preloader__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .preloader__mark {
+    width: 96px;
+    height: 96px;
+  }
+  .preloader__mark circle:first-child {
+    fill: #fff;
+  }
+  .preloader__word {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    overflow: hidden;
+    display: flex;
+    gap: 0.3em;
+  }
+  .preloader__word span {
+    display: inline-block;
+  }
+</style>

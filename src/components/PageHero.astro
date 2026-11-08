@@ -1,0 +1,132 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  title: string;
+  lead?: string;
+  crumb?: string;
+  crumbs?: { href: string; label: string }[];
+  image?: ImageMetadata;
+  eyebrow?: string;
+}
+const { title, lead, crumb, crumbs = [], image, eyebrow } = Astro.props;
+---
+
+<section class:list={['phero', { 'phero--img': image }]}>
+  <div class="phero__blob phero__blob--1" data-float aria-hidden="true"></div>
+  <div class="phero__blob phero__blob--2" data-float aria-hidden="true"></div>
+  <div class="container phero__inner">
+    <div class="phero__text">
+      <nav class="crumbs" aria-label="Навигационная цепочка" data-reveal="fade">
+        <a href="/">Главная</a>
+        {
+          crumbs.map((c) => (
+            <>
+              <span>/</span>
+              <a href={c.href}>{c.label}</a>
+            </>
+          ))
+        }
+        {
+          crumb && (
+            <>
+              <span>/</span>
+              <em>{crumb}</em>
+            </>
+          )
+        }
+      </nav>
+      {eyebrow && <p class="eyebrow" data-reveal="fade">{eyebrow}</p>}
+      <h1 data-split="load">{title}</h1>
+      {lead && <p class="lead phero__lead" data-reveal data-delay="0.3">{lead}</p>}
+      <slot />
+    </div>
+    {
+      image && (
+        <div class="phero__media" data-clip>
+          <Image src={image} alt="" widths={[480, 800, 1200]} sizes="(max-width: 900px) 100vw, 45vw" loading="eager" />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .phero {
+    position: relative;
+    padding-top: calc(var(--header-h) + clamp(40px, 6vw, 80px));
+    padding-bottom: clamp(40px, 6vw, 80px);
+    overflow: hidden;
+  }
+  .phero__inner {
+    position: relative;
+    display: grid;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
+  }
+  .phero--img .phero__inner {
+    grid-template-columns: 1.15fr 1fr;
+  }
+  .phero h1 {
+    font-size: clamp(2.2rem, 5.4vw, 4.8rem);
+    max-width: 16ch;
+  }
+  .phero__lead {
+    margin-top: 24px;
+    max-width: 640px;
+  }
+  .phero__media {
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    aspect-ratio: 4 / 3.4;
+    box-shadow: var(--shadow-lg);
+  }
+  .phero__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .crumbs a:hover {
+    color: var(--ink);
+  }
+  .crumbs em {
+    font-style: normal;
+    color: var(--ink);
+  }
+  .phero__blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .phero__blob--1 {
+    width: 420px;
+    height: 420px;
+    background: var(--sun);
+    top: -140px;
+    right: 8%;
+  }
+  .phero__blob--2 {
+    width: 300px;
+    height: 300px;
+    background: #ffd9c2;
+    bottom: -120px;
+    left: -80px;
+  }
+  @media (max-width: 900px) {
+    .phero--img .phero__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

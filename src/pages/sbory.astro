@@ -1,0 +1,229 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import DonateBlock from '../components/DonateBlock.astro';
+import Icon from '../components/Icon.astro';
+import { img } from '../data/images';
+import { fundraisers, site } from '../data/site';
+import { fmtMoney } from '../data/format';
+---
+
+<BaseLayout title="Сборы" description="Открытые сборы благотворительного фонда «Люди Вместе». За каждым сбором стоит живой человек.">
+  <PageHero title="Чужих бед не бывает" crumb="Сборы" lead="Мы не ждём чудес — мы создаём их вместе. Наша сила в единстве!" />
+
+  <section class="section--tight">
+    <div class="container intro">
+      <p class="intro__big" data-scrub-text>
+        За каждым сбором стоит живой человек: отец, дочь, мама, сын, сосед, коллега или просто прохожий, которому судьба
+        преподнесла тяжёлое испытание. Чудо — это мы с вами.
+      </p>
+      <div class="intro__text" data-reveal>
+        <p>
+          Кто-то жертвует 100 рублей, кто-то распространяет новости. Но всех нас объединяет одно — желание подарить шанс
+          тем, кто оказался в беде.
+        </p>
+        <p>
+          Даже небольшое пожертвование многократно приближает нас к финальной черте. Помогите им прямо сейчас. Поверьте,
+          вместе мы можем всё.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      {
+        fundraisers.map((f) => {
+          const pct = f.raised != null ? Math.min(100, Math.round((f.raised / f.goal) * 100)) : null;
+          return (
+            <article class="fcase">
+              <a href={img(f.image).src} class="fcase__img" data-lightbox="fr" data-clip>
+                <Image src={img(f.image)} alt={f.title} widths={[500, 800, 1200]} sizes="(max-width: 900px) 100vw, 50vw" />
+              </a>
+              <div class="fcase__body">
+                <span class="chip chip--live" data-reveal="fade">Сбор открыт</span>
+                <h2 data-split>{f.title}</h2>
+                <p class="fcase__who" data-reveal>{f.who}</p>
+                <p data-reveal>{f.text}</p>
+                <div class="fcase__need" data-reveal>
+                  <Icon name="sparkles" size={22} />
+                  <span>
+                    Требуется: <b>{f.need}</b>
+                  </span>
+                </div>
+                <div class="meter" data-reveal>
+                  <div class="meter__top">
+                    <span>Сумма сбора</span>
+                    <b data-count={f.goal} data-suffix=" ₽">{fmtMoney(f.goal)}</b>
+                  </div>
+                  {pct != null ? (
+                    <>
+                      <div class="meter__bar">
+                        <span data-progress={pct} />
+                      </div>
+                      <div class="meter__foot">
+                        <span>Собрано {fmtMoney(f.raised!)}</span>
+                        <span>{pct}%</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div class="meter__bar meter__bar--open">
+                      <span />
+                    </div>
+                  )}
+                </div>
+                <p class="fcase__note" data-reveal>{f.note}</p>
+                <div class="fcase__btns" data-reveal>
+                  <a href={site.sbpLink} target="_blank" rel="noopener" class="btn btn--sun" data-magnetic>
+                    <Icon name="heart" size={20} /> Помочь через СБП
+                  </a>
+                  <a href="/news/prosim-vashej-pomoshhi/" class="link-arrow">
+                    История сбора <Icon name="arrow" size={18} />
+                  </a>
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <DonateBlock />
+</BaseLayout>
+
+<style>
+  .intro {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: clamp(32px, 5vw, 80px);
+    align-items: end;
+  }
+  .intro__big {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.6vw, 2.3rem);
+    line-height: 1.28;
+    font-weight: 500;
+  }
+  .intro__text {
+    color: var(--ink-2);
+  }
+  .fcase {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(32px, 5vw, 80px);
+    align-items: center;
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: clamp(20px, 3vw, 40px);
+    box-shadow: var(--shadow);
+  }
+  .fcase__img {
+    display: block;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    cursor: zoom-in;
+  }
+  .fcase__img :global(img) {
+    width: 100%;
+    transition: transform 1s var(--ease);
+  }
+  .fcase__img:hover :global(img) {
+    transform: scale(1.04);
+  }
+  .fcase__body h2 {
+    margin: 18px 0 14px;
+  }
+  .fcase__who {
+    font-weight: 750;
+    font-size: 1.1rem;
+  }
+  .fcase__body > p:not(.fcase__who) {
+    color: var(--ink-2);
+  }
+  .fcase__need {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: var(--sun-soft);
+    border-radius: var(--r-sm);
+    padding: 14px 18px;
+    margin: 20px 0;
+  }
+  .meter {
+    background: var(--bg);
+    border-radius: var(--r);
+    padding: 20px 22px;
+  }
+  .meter__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .meter__top span {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meter__top b {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.4vw, 2.8rem);
+    font-variant-numeric: tabular-nums;
+  }
+  .meter__bar {
+    margin-top: 14px;
+    height: 14px;
+    background: var(--bg-2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .meter__bar span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--sun), var(--sun-2));
+    border-radius: inherit;
+  }
+  .meter__bar--open span {
+    width: 40%;
+    animation: open-bar 2.2s ease-in-out infinite;
+  }
+  @keyframes open-bar {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(260%);
+    }
+  }
+  .meter__foot {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+  .fcase__note {
+    font-size: 0.92rem;
+    margin-top: 18px;
+    padding-left: 14px;
+    border-left: 3px solid var(--coral);
+  }
+  .fcase__btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    margin-top: 28px;
+  }
+  @media (max-width: 900px) {
+    .intro,
+    .fcase {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

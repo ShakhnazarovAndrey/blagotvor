@@ -1,0 +1,182 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Feedback from '../components/Feedback.astro';
+import Icon from '../components/Icon.astro';
+import { img } from '../data/images';
+import { projects, site } from '../data/site';
+
+const ctaHref = (id: string) => (id === 'pomoshch-v-lechenii' ? '/kak-pomoch/#donate' : '#request');
+---
+
+<BaseLayout title="Проекты" description="Проекты фонда «Люди Вместе»: «Ваше право», «Время помогать», «Помощь в лечении».">
+  <PageHero
+    title="Проекты — это конкретные дела"
+    crumb="Проекты"
+    lead="Мы не ограничиваемся разовыми акциями — создаём системные проекты, которые решают реальные проблемы людей."
+    image={img('pic_ins_pr.jpg')}
+  >
+    <nav class="pnav" data-stagger aria-label="Проекты">
+      {projects.map((p) => <a href={`#${p.id}`} class="chip">«{p.title}»</a>)}
+    </nav>
+  </PageHero>
+
+  <section class="section">
+    <div class="container plist">
+      {
+        projects.map((p, i) => (
+          <article class:list={['proj', { 'proj--flip': i % 2 }]} id={p.id}>
+            <div class="proj__media" data-clip>
+              <Image src={img(p.image)} alt={p.title} widths={[500, 800, 1100]} sizes="(max-width: 900px) 100vw, 50vw" />
+              <span class="proj__num">0{i + 1}</span>
+            </div>
+            <div class="proj__body">
+              <span class:list={['chip', { 'chip--live': p.active, 'chip--sun': !p.active }]} data-reveal="fade">
+                {p.status}
+              </span>
+              <h2 data-split>Проект «{p.title}»</h2>
+              <p class="lead" data-reveal>
+                {p.lead}
+              </p>
+              <div class="proj__text" data-reveal>
+                {p.body.map((t) => <p>{t}</p>)}
+              </div>
+              {p.quote && (
+                <blockquote class="proj__quote" data-reveal>
+                  «{p.quote}»
+                </blockquote>
+              )}
+              <a href={ctaHref(p.id)} class="btn btn--sun" data-reveal data-magnetic>
+                {p.cta} <Icon name="arrow" class="arrow" />
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="support" data-reveal="scale">
+        <div>
+          <p class="eyebrow">Поддержать проекты</p>
+          <h2>Сделайте вклад в развитие проектов</h2>
+          <p class="lead">
+            Ваше участие помогает превращать задумки в реальные дела. Все переводы защищены, средства направляются на
+            текущие программы фонда.
+          </p>
+        </div>
+        <div class="support__btns">
+          <a href={site.sbpLink} target="_blank" rel="noopener" class="btn btn--sun" data-magnetic><Icon name="qr" size={20} /> СБП</a>
+          <a href="/kak-pomoch/#donate" class="btn btn--light" data-magnetic><Icon name="card" size={20} /> Банковская карта</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Feedback title="Присоединяйтесь к созданию перемен" text="Если вы хотите стать участником проекта или предложить идею — напишите нам." />
+</BaseLayout>
+
+<style>
+  .pnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 32px;
+  }
+  .pnav .chip {
+    background: var(--paper);
+    box-shadow: var(--shadow);
+    padding: 10px 18px;
+    transition: background 0.3s;
+  }
+  .pnav .chip:hover {
+    background: var(--sun);
+  }
+  .plist {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(72px, 10vw, 140px);
+  }
+  .proj {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(32px, 5vw, 88px);
+    align-items: center;
+    scroll-margin-top: 110px;
+  }
+  .proj--flip .proj__media {
+    order: 2;
+  }
+  .proj__media {
+    position: relative;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    aspect-ratio: 4 / 3.6;
+  }
+  .proj__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .proj__num {
+    position: absolute;
+    left: 20px;
+    bottom: 12px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(4rem, 9vw, 8rem);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 2px #fff;
+  }
+  .proj__body h2 {
+    margin: 20px 0;
+  }
+  .proj__text {
+    color: var(--ink-2);
+    margin: 20px 0 28px;
+  }
+  .proj__quote {
+    margin: 0 0 32px;
+    padding: 20px 24px;
+    border-left: 5px solid var(--sun);
+    background: var(--paper);
+    border-radius: 0 var(--r) var(--r) 0;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+  }
+  .support {
+    display: grid;
+    grid-template-columns: 1.4fr auto;
+    gap: 32px;
+    align-items: end;
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--r-lg);
+    padding: clamp(32px, 5vw, 64px);
+  }
+  .support .eyebrow,
+  .support .lead {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .support .lead {
+    margin-top: 16px;
+  }
+  .support__btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 900px) {
+    .proj,
+    .support {
+      grid-template-columns: 1fr;
+    }
+    .proj--flip .proj__media {
+      order: 0;
+    }
+  }
+</style>

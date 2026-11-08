@@ -1,0 +1,126 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  compact?: boolean;
+  submitLabel?: string;
+  topic?: string;
+}
+const { compact = false, submitLabel = 'Отправить сообщение', topic = 'Обращение с сайта' } = Astro.props;
+const uid = Math.random().toString(36).slice(2, 8);
+---
+
+<form class:list={['cform', { 'cform--compact': compact }]} data-form novalidate>
+  <input type="hidden" name="topic" value={topic} />
+  <div class="cform__grid">
+    <label class="field">
+      <input type="text" name="name" placeholder=" " autocomplete="name" required />
+      <span>ФИО *</span>
+      <em class="err">Пожалуйста, укажите имя</em>
+    </label>
+    <label class="field">
+      <input type="tel" name="phone" placeholder=" " autocomplete="tel" inputmode="tel" required data-phone />
+      <span>Телефон *</span>
+      <em class="err">Введите номер полностью</em>
+    </label>
+    {
+      !compact && (
+        <label class="field cform__full">
+          <input type="email" name="email" placeholder=" " autocomplete="email" data-email />
+          <span>E-mail</span>
+          <em class="err">Проверьте адрес почты</em>
+        </label>
+      )
+    }
+    <label class="field cform__full">
+      <textarea name="message" placeholder=" " rows="4"></textarea>
+      <span>Сообщение</span>
+    </label>
+  </div>
+  <label class="check" id={`consent-${uid}`}>
+    <input type="checkbox" name="consent" required />
+    <span>
+      Нажимая на кнопку «{submitLabel}», вы даёте согласие на обработку
+      <a href="/privacy/" target="_blank">персональных данных</a> и подтверждаете, что ознакомлены с политикой их обработки.
+    </span>
+  </label>
+  <button type="submit" class="btn btn--sun cform__submit" data-magnetic>
+    <span>{submitLabel}</span>
+    <Icon name="arrow" class="arrow" />
+  </button>
+
+  <div class="cform__done" aria-live="polite">
+    <div class="cform__done-icon"><Icon name="check" size={40} /></div>
+    <h3>Спасибо!</h3>
+    <p>Мы получили ваше сообщение и скоро свяжемся с вами.</p>
+  </div>
+</form>
+
+<style>
+  .cform {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .cform__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .cform__full {
+    grid-column: 1 / -1;
+  }
+  .cform--compact .cform__grid {
+    grid-template-columns: 1fr;
+  }
+  .cform__submit {
+    align-self: flex-start;
+  }
+  .cform__submit[disabled] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .cform__done {
+    position: absolute;
+    inset: -8px;
+    border-radius: var(--r);
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.96);
+    transition: all 0.5s var(--ease);
+  }
+  .cform.is-done .cform__done {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  .cform__done-icon {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--sun);
+    display: grid;
+    place-items: center;
+    margin-bottom: 8px;
+    transform: scale(0);
+    transition: transform 0.6s 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .cform.is-done .cform__done-icon {
+    transform: scale(1);
+  }
+  @media (max-width: 560px) {
+    .cform__grid {
+      grid-template-columns: 1fr;
+    }
+    .cform__submit {
+      align-self: stretch;
+    }
+  }
+</style>

@@ -1,0 +1,101 @@
+---
+import { Image } from 'astro:assets';
+import ContactForm from './ContactForm.astro';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import photo from '../assets/site/pic_ins_news.jpg';
+
+interface Props {
+  title?: string;
+  text?: string;
+}
+const {
+  title = 'Напишите нам — мы рядом!',
+  text = 'Оставьте сообщение, и мы свяжемся с вами, чтобы обсудить, как можем помочь.',
+} = Astro.props;
+---
+
+<section class="fb section" id="feedback">
+  <div class="container">
+    <div class="fb__box">
+      <div class="fb__side">
+        <div class="fb__photo" data-clip>
+          <Image src={photo} alt="Руки, бережно держащие красное сердце" widths={[400, 700]} sizes="(max-width: 900px) 100vw, 40vw" />
+        </div>
+        <div class="fb__contacts" data-stagger>
+          <a href={site.phoneHref}><Icon name="phone" size={20} /> {site.phone}</a>
+          <a href={`mailto:${site.email}`}><Icon name="mail" size={20} /> {site.email}</a>
+          <span><Icon name="clock" size={20} /> {site.hours}</span>
+        </div>
+      </div>
+      <div class="fb__form">
+        <p class="eyebrow">Обратная связь</p>
+        <h2 data-split>{title}</h2>
+        <p class="lead fb__lead" data-reveal>{text}</p>
+        <div data-reveal><ContactForm /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .fb__box {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(28px, 5vw, 72px);
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: clamp(20px, 3vw, 40px);
+    box-shadow: var(--shadow);
+  }
+  .fb__side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .fb__photo {
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    flex: 1;
+    min-height: 260px;
+  }
+  .fb__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .fb__contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--sun);
+    border-radius: var(--r);
+    padding: 22px 24px;
+    font-weight: 700;
+  }
+  .fb__contacts > * {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .fb__contacts :global(svg) {
+    flex: none;
+  }
+  .fb__form {
+    padding: clamp(8px, 2vw, 24px) clamp(0px, 1vw, 16px);
+  }
+  .fb__lead {
+    margin: 16px 0 32px;
+  }
+  @media (max-width: 900px) {
+    .fb__box {
+      grid-template-columns: 1fr;
+    }
+    .fb__side {
+      order: 2;
+    }
+    .fb__photo {
+      display: none;
+    }
+  }
+</style>

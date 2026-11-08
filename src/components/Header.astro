@@ -1,0 +1,291 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { nav, site } from '../data/site';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const path = Astro.url.pathname.slice(base.length) || '/';
+const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+
+<header class="header" data-header>
+  <div class="header__inner container">
+    <Logo />
+    <nav class="header__nav" aria-label="Основное меню">
+      {
+        nav.map((n) => (
+          <a href={n.href} class:list={['header__link', { 'is-active': isActive(n.href) }]}>
+            <span>{n.label}</span>
+          </a>
+        ))
+      }
+    </nav>
+    <div class="header__actions">
+      <a href={site.phoneHref} class="header__phone">
+        <Icon name="phone" size={18} />
+        <span>{site.phone}</span>
+      </a>
+      <a href="/kak-pomoch/#donate" class="btn btn--sun btn--sm" data-magnetic>
+        <Icon name="heart" size={18} />
+        Помочь
+      </a>
+      <button class="burger" aria-label="Открыть меню" aria-expanded="false" data-burger>
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mmenu" data-mmenu aria-hidden="true">
+  <div class="mmenu__bg"></div>
+  <div class="mmenu__inner container">
+    <nav class="mmenu__nav" aria-label="Мобильное меню">
+      <a href="/" style="--i:0">Главная</a>
+      {
+        nav.map((n, i) => (
+          <a href={n.href} style={`--i:${i + 1}`} class:list={{ 'is-active': isActive(n.href) }}>
+            {n.label}
+          </a>
+        ))
+      }
+      <a href="/meropriyatiya/" style={`--i:${nav.length + 1}`}>Мероприятия</a>
+      <a href="/blagodarnost/" style={`--i:${nav.length + 2}`}>Благодарность</a>
+    </nav>
+    <div class="mmenu__foot">
+      <a href={site.phoneHref}>{site.phone}</a>
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+      <div class="mmenu__socials">
+        {
+          site.socials.map((s) => (
+            <a href={s.href} target="_blank" rel="noopener" aria-label={s.name}>
+              <Icon name={s.icon} size={22} />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    transition:
+      transform 0.5s var(--ease),
+      background 0.4s,
+      box-shadow 0.4s,
+      height 0.4s var(--ease);
+  }
+  .header.is-scrolled {
+    --header-h: 70px;
+    background: rgba(251, 247, 239, 0.82);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    box-shadow: 0 1px 0 var(--line);
+  }
+  .header.is-hidden {
+    transform: translateY(-100%);
+  }
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .header__nav {
+    display: flex;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    padding: 6px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .header__link {
+    position: relative;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-weight: 650;
+    font-size: 0.93rem;
+    transition: background 0.3s;
+    white-space: nowrap;
+  }
+  .header__link:hover {
+    background: var(--bg-2);
+  }
+  .header__link.is-active {
+    background: var(--ink);
+    color: #fff;
+  }
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .header__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .header__phone:hover {
+    color: var(--sun-2);
+  }
+
+  .burger {
+    display: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--ink);
+    position: relative;
+    z-index: 60;
+  }
+  .burger span {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: transform 0.4s var(--ease);
+  }
+  .burger span:first-child {
+    top: 19px;
+  }
+  .burger span:last-child {
+    top: 27px;
+  }
+  :global(html.menu-open) .burger span:first-child {
+    transform: translateY(4px) rotate(45deg);
+  }
+  :global(html.menu-open) .burger span:last-child {
+    transform: translateY(-4px) rotate(-45deg);
+  }
+
+  :global(html.menu-open) .header :global(.logo__mark circle:first-child) {
+    fill: #fff;
+  }
+  :global(html.menu-open) .header {
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .mmenu {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    pointer-events: none;
+    visibility: hidden;
+    transition: visibility 0s 0.7s;
+  }
+  :global(html.menu-open) .mmenu {
+    pointer-events: auto;
+    visibility: visible;
+    transition: none;
+  }
+  .mmenu__bg {
+    position: absolute;
+    inset: 0;
+    background: var(--sun);
+    clip-path: circle(0% at calc(100% - 44px) 42px);
+    transition: clip-path 0.7s var(--ease);
+  }
+  :global(html.menu-open) .mmenu__bg {
+    clip-path: circle(150% at calc(100% - 44px) 42px);
+  }
+  .mmenu__inner {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: calc(var(--header-h) + 24px);
+    padding-bottom: 32px;
+    overflow-y: auto;
+  }
+  .mmenu__nav {
+    display: flex;
+    flex-direction: column;
+  }
+  .mmenu__nav a {
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 7vw, 3rem);
+    font-weight: 600;
+    line-height: 1.25;
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+      opacity 0.4s,
+      transform 0.6s var(--ease);
+  }
+  .mmenu__nav a.is-active {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 6px;
+  }
+  :global(html.menu-open) .mmenu__nav a {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.15s + var(--i) * 0.05s);
+  }
+  .mmenu__foot {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: 700;
+    margin-top: 24px;
+    opacity: 0;
+    transition: opacity 0.4s 0.5s;
+  }
+  :global(html.menu-open) .mmenu__foot {
+    opacity: 1;
+  }
+  .mmenu__socials {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .mmenu__socials a {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--sun);
+    display: grid;
+    place-items: center;
+  }
+
+  @media (max-width: 1280px) {
+    .header__phone span {
+      display: none;
+    }
+    .header__phone {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      justify-content: center;
+      box-shadow: inset 0 0 0 1.5px var(--line);
+      background: #fff;
+    }
+  }
+  @media (max-width: 1120px) {
+    .header__nav {
+      display: none;
+    }
+    .burger {
+      display: block;
+    }
+  }
+  @media (max-width: 480px) {
+    .header__actions .btn {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,133 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import Icon from '../../components/Icon.astro';
+
+const news = (await getCollection('news')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const years = [...new Set(news.map((n) => n.data.date.getFullYear()))].sort((a, b) => b - a);
+---
+
+<BaseLayout title="Новости" description="Новости благотворительного фонда «Люди Вместе»: акции, мероприятия, истории подопечных.">
+  <PageHero title="Новости фонда" crumb="Новости" lead={`${news.length} историй о добрых делах, встречах и людях, которым мы помогаем.`} />
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="filter" data-news-filter data-reveal>
+        <div class="filter__years" role="group" aria-label="Фильтр по году">
+          <button class="filter__btn is-active" data-year="all">Все</button>
+          {years.map((y) => <button class="filter__btn" data-year={String(y)}>{y}</button>)}
+        </div>
+        <label class="filter__search">
+          <Icon name="search" size={20} />
+          <input type="search" placeholder="Поиск по новостям" aria-label="Поиск по новостям" />
+        </label>
+      </div>
+
+      <div class="ngrid">
+        {news.map((p) => <NewsCard post={p} filterable />)}
+      </div>
+      <p class="nempty" data-news-empty hidden>Ничего не нашлось. Попробуйте другой запрос.</p>
+      <div class="nmore">
+        <button class="btn btn--ghost" data-news-more data-magnetic>Показать ещё <Icon name="plus" size={18} /></button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .filter {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+  .filter__years {
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    background: var(--paper);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+  }
+  .filter__btn {
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-weight: 700;
+    transition: background 0.3s, color 0.3s;
+  }
+  .filter__btn:hover {
+    background: var(--bg-2);
+  }
+  .filter__btn.is-active {
+    background: var(--ink);
+    color: #fff;
+  }
+  .filter__search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--paper);
+    border-radius: 999px;
+    padding: 0 20px;
+    box-shadow: var(--shadow);
+    min-width: min(360px, 100%);
+    flex: 0 1 360px;
+    transition: box-shadow 0.3s;
+  }
+  .filter__search:focus-within {
+    box-shadow: 0 0 0 3px var(--sun-2);
+  }
+  .filter__search input {
+    border: 0;
+    background: none;
+    font: inherit;
+    padding: 14px 0;
+    width: 100%;
+    outline: none;
+  }
+  .ngrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .ngrid > :global(.ncard) {
+    animation: card-in 0.7s var(--ease) both;
+  }
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+  }
+  .nempty {
+    text-align: center;
+    padding: 60px 0;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .nmore {
+    display: flex;
+    justify-content: center;
+    margin-top: 48px;
+  }
+  .nmore [hidden] {
+    display: none;
+  }
+  @media (max-width: 1000px) {
+    .ngrid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 600px) {
+    .ngrid {
+      grid-template-columns: 1fr;
+    }
+    .filter__years {
+      overflow-x: auto;
+      max-width: 100%;
+    }
+  }
+</style>

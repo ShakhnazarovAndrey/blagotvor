@@ -1,0 +1,1120 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import SectionHead from '../components/SectionHead.astro';
+import NewsCard from '../components/NewsCard.astro';
+import Feedback from '../components/Feedback.astro';
+import { site, helpTypes, categories, waysToHelp, projects, values, fundraisers, partners, press } from '../data/site';
+import { img } from '../data/images';
+import { fmtMoney } from '../data/format';
+
+const news = (await getCollection('news')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const latest = news.slice(0, 5);
+const donorActions = news.filter((n) => /донор|сдач[уа] крови|сдать кровь/i.test(n.data.title + ' ' + (n.body ?? '').slice(0, 300))).length;
+const theatre = news.filter((n) => /театр/i.test(n.data.title)).length;
+const fr = fundraisers[0];
+---
+
+<BaseLayout>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero__bg" aria-hidden="true">
+      <div class="hero__sun" data-float></div>
+      <svg class="hero__squiggle" viewBox="0 0 600 200" data-draw>
+        <path d="M10 150C90 40 160 40 200 110s110 70 150-10 120-100 240 20" fill="none" stroke="#16161b" stroke-width="2.2" stroke-linecap="round"></path>
+      </svg>
+    </div>
+
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <p class="eyebrow" data-reveal="fade">Благотворительный фонд · Санкт-Петербург</p>
+        <h1 class="hero__title" data-split="load">
+          «Люди Вместе» — единство, которое <span class="hl" data-hl>меняет!</span>
+        </h1>
+        <p class="lead hero__lead" data-reveal data-delay="0.5">
+          Каждый может изменить чью-то жизнь. Начните с одного доброго шага.
+        </p>
+        <div class="hero__actions" data-reveal data-delay="0.65">
+          <a href="/kak-pomoch/#donate" class="btn btn--sun" data-magnetic>
+            <Icon name="heart" size={20} /> Помочь сейчас
+          </a>
+          <a href="/about/" class="btn btn--ghost" data-magnetic>
+            О фонде <Icon name="arrow" class="arrow" />
+          </a>
+        </div>
+        <div class="hero__trust" data-reveal data-delay="0.8">
+          <div class="hero__avatars">
+            {['support_4.jpg', 'news_2.jpg', 'photo_th_1.jpg'].map((f) => (
+              <Image src={img(f)} alt="" width={96} height={96} />
+            ))}
+          </div>
+          <p><b>{news.length}+ добрых историй</b><br />рассказали в новостях фонда</p>
+        </div>
+      </div>
+
+      <div class="hero__collage">
+        <div class="hero__ph hero__ph--1" data-clip>
+          <div class="hero__ph-in" data-parallax="0.08">
+            <Image src={img('banner_8.jpg')} alt="Руки волонтёров, сложенные вместе" widths={[500, 800, 1100]} sizes="(max-width: 900px) 90vw, 36vw" loading="eager" />
+          </div>
+        </div>
+        <div class="hero__ph hero__ph--2" data-clip>
+          <Image src={img('g_fish_3.jpg')} alt="Волонтёр заботится о пожилой женщине" widths={[300, 500]} sizes="(max-width: 900px) 45vw, 18vw" loading="eager" />
+        </div>
+        <div class="hero__ph hero__ph--3" data-clip>
+          <Image src={img('g_fish_2.jpg')} alt="Добрые дела вместе с детьми" widths={[300, 500]} sizes="(max-width: 900px) 45vw, 16vw" loading="eager" />
+        </div>
+        <div class="badge" data-float aria-hidden="true">
+          <svg viewBox="0 0 120 120" class="badge__ring">
+            <defs><path id="badge-c" d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0"></path></defs>
+            <text><textPath href="#badge-c">единство • забота • участие • </textPath></text>
+          </svg>
+          <span class="badge__heart"><Icon name="heart" size={30} /></span>
+        </div>
+        <div class="hero__note" data-float>
+          <span class="chip chip--live">С {site.founded} года</span>
+          <p>рядом с теми, кому нужна помощь</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MARQUEE ============ -->
+  <div class="ribbons" aria-hidden="true">
+    <div class="ribbon ribbon--sun">
+      <div class="ribbon__track" data-marquee="28">
+        {[0, 1].map(() => <span>{values.map((v) => <>{v} <i>✦</i> </>)}</span>)}
+      </div>
+    </div>
+    <div class="ribbon ribbon--ink">
+      <div class="ribbon__track" data-marquee="34" data-reverse>
+        {[0, 1].map(() => <span>{['Психологическая', 'Юридическая', 'Медицинская', 'Социальная помощь'].map((v) => <>{v} <i>❤</i> </>)}</span>)}
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ABOUT ============ -->
+  <section class="section about">
+    <div class="container">
+      <p class="eyebrow" data-reveal="fade">О фонде «Люди Вместе»</p>
+      <p class="about__statement" data-scrub-text>
+        Фонд создан с миссией объединять людей, нуждающихся в помощи, и тех, кто хочет помочь, создавая ЕДИНСТВО. Мы
+        закрываем пробелы и обращаем внимание на те сферы, которые требуют дополнительной поддержки.
+      </p>
+
+      <div class="about__grid">
+        <div class="about__cats" data-reveal>
+          <h3>Приоритетные категории граждан</h3>
+          <ul>
+            <li>Участники СВО и их семьи</li>
+            <li>Родители детей с инвалидностью (ОВЗ)</li>
+            <li>Онкобольные</li>
+            <li>Пенсионеры</li>
+          </ul>
+          <a href="/about/" class="link-arrow">Подробнее о фонде <Icon name="arrow" size={18} /></a>
+        </div>
+        <div class="about__help grid" data-stagger>
+          {
+            helpTypes.map((h, i) => (
+              <div class="help" data-tilt>
+                <span class="help__num">0{i + 1}</span>
+                <span class="help__icon">
+                  <Icon name={h.icon} size={28} />
+                </span>
+                <h3>{h.title}</h3>
+                <p>{h.text}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section class="stats section--tight">
+    <div class="container">
+      <div class="stats__grid" data-stagger>
+        <div class="stat">
+          <b data-count={site.founded} data-plain>{site.founded}</b>
+          <span>год основания фонда</span>
+        </div>
+        <div class="stat">
+          <b data-count={news.length} data-suffix="+">{news.length}+</b>
+          <span>историй добрых дел в новостях</span>
+        </div>
+        <div class="stat">
+          <b data-count={donorActions}>{donorActions}</b>
+          <span>донорских акций и встреч</span>
+        </div>
+        <div class="stat">
+          <b data-count={theatre}>{theatre}</b>
+          <span>театральных вечеров и приглашений</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHO WE HELP (horizontal) ============ -->
+  <section class="who" data-hscroll>
+    <div class="who__track" data-hscroll-track>
+      <div class="who__intro">
+        <p class="eyebrow">Кому мы помогаем</p>
+        <h2 data-split>Разные судьбы — одна общая цель</h2>
+        <p class="lead">Вернуть людям уверенность и надежду.</p>
+        <span class="who__hint" aria-hidden="true">листайте <Icon name="arrow" size={18} /></span>
+      </div>
+      {
+        categories.map((c, i) => (
+          <article class="who__card">
+            <div class="who__img">
+              <Image src={img(c.image)} alt={c.title} widths={[500, 800]} sizes="(max-width: 1024px) 85vw, 34vw" />
+            </div>
+            <div class="who__body">
+              <span class="who__n">0{i + 1}</span>
+              <h3>{c.title}</h3>
+              <p>{c.text}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section class="section projects">
+    <div class="container">
+      <SectionHead eyebrow="Проекты" title="Не разовые акции, а системная помощь" text="Мы создаём проекты, которые решают реальные проблемы людей.">
+        <a href="/proekty/" class="btn btn--ghost" data-magnetic>Все проекты <Icon name="arrow" class="arrow" /></a>
+      </SectionHead>
+      <div class="projects__grid" data-stagger>
+        {
+          projects.map((p) => (
+            <a href={`/proekty/#${p.id}`} class="pcard">
+              <div class="pcard__img">
+                <Image src={img(p.image)} alt={p.title} widths={[400, 700]} sizes="(max-width: 900px) 100vw, 33vw" />
+              </div>
+              <div class="pcard__body">
+                <span class:list={['chip', { 'chip--live': p.active }]}>{p.active ? 'Активный' : 'Скоро запуск'}</span>
+                <h3>«{p.title}»</h3>
+                <p>{p.lead}</p>
+              </div>
+              <span class="pcard__arrow">
+                <Icon name="arrow-up-right" />
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FUNDRAISER ============ -->
+  <section class="section--tight">
+    <div class="container">
+      <div class="fr">
+        <div class="fr__img" data-clip>
+          <Image src={img(fr.image)} alt={fr.title} widths={[500, 800, 1100]} sizes="(max-width: 900px) 100vw, 45vw" />
+        </div>
+        <div class="fr__body">
+          <span class="chip chip--live" data-reveal="fade">Открытый сбор</span>
+          <h2 data-split>{fr.title}</h2>
+          <p class="fr__who" data-reveal>{fr.who}</p>
+          <p data-reveal>{fr.text}</p>
+          <div class="fr__goal" data-reveal>
+            <span>Сумма сбора</span>
+            <b data-count={fr.goal} data-suffix=" ₽">{fmtMoney(fr.goal)}</b>
+          </div>
+          <div class="fr__actions" data-reveal>
+            <a href="/kak-pomoch/#donate" class="btn btn--sun" data-magnetic><Icon name="heart" size={20} /> Помочь сбору</a>
+            <a href="/sbory/" class="link-arrow">Все сборы <Icon name="arrow" size={18} /></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW TO HELP ============ -->
+  <section class="section ways">
+    <div class="container">
+      <SectionHead eyebrow="Как помочь" title="Добро начинается с действия" text="Вы можете изменить больше, чем думаете — стоит только начать." center />
+      <div class="ways__grid" data-stagger>
+        {
+          waysToHelp.map((w, i) => (
+            <a href={w.href} class:list={['way', `way--${i}`]} data-tilt>
+              <span class="way__icon">
+                <Icon name={w.icon} size={34} />
+              </span>
+              <h3>{w.title}</h3>
+              <p>{w.text}</p>
+              <span class="way__cta">
+                {w.cta} <Icon name="arrow" size={18} />
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEWS ============ -->
+  <section class="section news">
+    <div class="container">
+      <SectionHead eyebrow="Новости фонда" title="Что происходит у нас">
+        <a href="/news/" class="btn btn--ghost" data-magnetic>Все новости <Icon name="arrow" class="arrow" /></a>
+      </SectionHead>
+      <div class="news__grid" data-stagger>
+        {latest.map((p, i) => <NewsCard post={p} big={i === 0} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRESS & PARTNERS ============ -->
+  <section class="section--tight press">
+    <div class="container press__inner">
+      <div class="press__col" data-reveal>
+        <p class="eyebrow">Пресса о фонде</p>
+        <h3 class="press__title">Сюжеты телеканала «Санкт-Петербург»</h3>
+        <div class="press__videos">
+          {
+            press.map((p) => (
+              <a href={p.video} class="video" data-lightbox="press" data-type="video" data-caption={p.title}>
+                <Image src={img('logo-spb.jpg')} alt="" width={480} />
+                <span class="video__play">
+                  <Icon name="play" size={22} />
+                </span>
+                <span class="video__title">{p.title.replace(/ — .*/, '')}</span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+      <div class="press__col" data-reveal data-delay="0.15">
+        <p class="eyebrow">Наши партнёры</p>
+        <h3 class="press__title">Те, кто делает добро возможным</h3>
+        <div class="partners">
+          {partners.map((p) => (
+            <div class="partner"><Image src={img(p.logo)} alt={p.name} height={56} /></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Feedback />
+</BaseLayout>
+
+<style>
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    padding-top: calc(var(--header-h) + clamp(24px, 4vw, 56px));
+    padding-bottom: clamp(48px, 6vw, 80px);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .hero__sun {
+    position: absolute;
+    width: min(70vw, 900px);
+    aspect-ratio: 1;
+    right: -18%;
+    top: -22%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, var(--sun) 0%, rgba(255, 209, 46, 0.35) 45%, transparent 70%);
+    filter: blur(10px);
+  }
+  .hero__squiggle {
+    position: absolute;
+    left: -40px;
+    bottom: 6%;
+    width: min(55vw, 640px);
+    opacity: 0.18;
+  }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.08fr 1fr;
+    gap: clamp(32px, 5vw, 80px);
+    align-items: center;
+  }
+  .hero__title {
+    font-size: clamp(2.4rem, 4.7vw, 4.6rem);
+    max-width: 15ch;
+  }
+  .hero__lead {
+    margin-top: 28px;
+    max-width: 480px;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+  .hero__trust {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 44px;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+  .hero__trust b {
+    color: var(--ink);
+  }
+  .hero__avatars {
+    display: flex;
+  }
+  .hero__avatars :global(img) {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--bg);
+    margin-left: -12px;
+  }
+  .hero__avatars :global(img:first-child) {
+    margin-left: 0;
+  }
+
+  .hero__collage {
+    position: relative;
+    aspect-ratio: 1 / 1.05;
+    max-height: 78vh;
+    width: 100%;
+  }
+  .hero__ph {
+    position: absolute;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .hero__ph :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__ph-in {
+    position: absolute;
+    inset: -8% 0;
+  }
+  .hero__ph--1 {
+    inset: 4% 8% 22% 14%;
+    border-radius: 999px 999px var(--r-lg) var(--r-lg);
+  }
+  .hero__ph--2 {
+    width: 38%;
+    aspect-ratio: 1;
+    left: 0;
+    bottom: 2%;
+    border-radius: 50%;
+    border: 6px solid var(--bg);
+  }
+  .hero__ph--3 {
+    width: 34%;
+    aspect-ratio: 3 / 4;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--r-lg);
+    border: 6px solid var(--bg);
+  }
+  .badge {
+    position: absolute;
+    top: 2%;
+    left: 0;
+    width: clamp(110px, 11vw, 150px);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    border-radius: 50%;
+    color: var(--sun);
+    z-index: 2;
+  }
+  .badge__ring {
+    position: absolute;
+    inset: 0;
+    animation: spin 16s linear infinite;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    fill: #fff;
+  }
+  .badge__heart {
+    animation: beat 1.8s ease-in-out infinite;
+  }
+  .hero__note {
+    position: absolute;
+    right: 2%;
+    top: 12%;
+    background: var(--paper);
+    border-radius: var(--r);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-lg);
+    max-width: 200px;
+    z-index: 2;
+  }
+  .hero__note p {
+    margin: 10px 0 0;
+    font-weight: 700;
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes beat {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    15% {
+      transform: scale(1.2);
+    }
+    30% {
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.12);
+    }
+  }
+
+  /* RIBBONS */
+  .ribbons {
+    position: relative;
+    padding-block: 40px;
+    overflow: hidden;
+  }
+  .ribbon {
+    overflow: hidden;
+    padding-block: 16px;
+  }
+  .ribbon--sun {
+    background: var(--sun);
+    transform: rotate(-2deg) scale(1.05);
+    position: relative;
+    z-index: 2;
+  }
+  .ribbon--ink {
+    background: var(--ink);
+    color: #fff;
+    transform: rotate(1.5deg) scale(1.05);
+    margin-top: -18px;
+  }
+  .ribbon__track {
+    display: flex;
+    width: max-content;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.2rem, 2.4vw, 2rem);
+    white-space: nowrap;
+  }
+  .ribbon__track span {
+    padding-right: 0.6em;
+  }
+  .ribbon__track i {
+    font-style: normal;
+    margin: 0 0.5em;
+    color: var(--coral);
+  }
+  .ribbon--sun i {
+    color: var(--ink);
+  }
+
+  /* ABOUT */
+  .about__statement {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3.2vw, 2.9rem);
+    line-height: 1.22;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    max-width: 24ch;
+    margin: 0 0 clamp(48px, 6vw, 88px);
+  }
+  .about__grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.4fr;
+    gap: clamp(28px, 4vw, 64px);
+    align-items: start;
+  }
+  .about__cats {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--r-lg);
+    padding: clamp(28px, 3vw, 40px);
+  }
+  .about__cats h3 {
+    color: var(--sun);
+    margin-bottom: 20px;
+  }
+  .about__cats ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px;
+  }
+  .about__cats li {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    font-weight: 650;
+    display: flex;
+    gap: 12px;
+  }
+  .about__cats li::before {
+    content: '✦';
+    color: var(--sun);
+  }
+  .about__help {
+    grid-template-columns: 1fr 1fr;
+  }
+  .help {
+    position: relative;
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: 32px 28px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: background 0.5s;
+  }
+  .help::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 209, 46, 0.25), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+  .help:hover::after {
+    opacity: 1;
+  }
+  .help__num {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    font-family: var(--font-display);
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .help__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: var(--sun);
+    display: grid;
+    place-items: center;
+    margin-bottom: 24px;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .help:hover .help__icon {
+    transform: rotate(-10deg) scale(1.08);
+  }
+  .help h3 {
+    margin-bottom: 10px;
+  }
+  .help p {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+
+  /* STATS */
+  .stats__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--sun);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+  }
+  .stat {
+    padding: clamp(28px, 3vw, 44px);
+    border-right: 1px solid rgba(22, 22, 27, 0.12);
+  }
+  .stat:last-child {
+    border-right: 0;
+  }
+  .stat b {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 4.5vw, 4rem);
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+  .stat span {
+    display: block;
+    margin-top: 12px;
+    font-weight: 650;
+    max-width: 18ch;
+  }
+
+  /* WHO */
+  .who {
+    padding-block: clamp(72px, 9vw, 120px);
+    overflow: hidden;
+  }
+  .who__track {
+    display: flex;
+    gap: 24px;
+    padding-inline: var(--gutter);
+    width: max-content;
+  }
+  .who__intro {
+    width: min(420px, 80vw);
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 24px;
+  }
+  .who__intro .lead {
+    margin-top: 20px;
+  }
+  .who__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 28px;
+    font-weight: 700;
+    color: var(--muted);
+    animation: nudge 1.6s ease-in-out infinite;
+  }
+  @keyframes nudge {
+    50% {
+      transform: translateX(10px);
+    }
+  }
+  .who__card {
+    flex: none;
+    width: clamp(300px, 34vw, 480px);
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+  .who__img {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+  .who__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s var(--ease);
+  }
+  .who__card:hover .who__img :global(img) {
+    transform: scale(1.06);
+  }
+  .who__body {
+    padding: 28px;
+    position: relative;
+  }
+  .who__n {
+    position: absolute;
+    top: -32px;
+    right: 24px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--sun);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    border: 5px solid var(--paper);
+  }
+  .who__body h3 {
+    font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+    margin-bottom: 10px;
+    max-width: 16ch;
+  }
+  .who__body p {
+    color: var(--ink-2);
+  }
+  @media (max-width: 1023px) {
+    .who__track {
+      width: auto;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 16px;
+      scrollbar-width: none;
+    }
+    .who__track::-webkit-scrollbar {
+      display: none;
+    }
+    .who__card {
+      scroll-snap-align: center;
+      width: min(82vw, 400px);
+    }
+    .who__intro {
+      width: min(82vw, 400px);
+    }
+  }
+
+  /* PROJECTS */
+  .projects__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .pcard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.6s var(--ease), box-shadow 0.6s var(--ease);
+  }
+  .pcard:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+  }
+  .pcard__img {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+  .pcard__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s var(--ease);
+  }
+  .pcard:hover .pcard__img :global(img) {
+    transform: scale(1.07);
+  }
+  .pcard__body {
+    padding: 26px 28px 32px;
+  }
+  .pcard__body h3 {
+    font-size: 1.4rem;
+    margin: 16px 0 10px;
+  }
+  .pcard__body p {
+    color: var(--ink-2);
+  }
+  .pcard__arrow {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    transition: transform 0.5s var(--ease), background 0.3s;
+  }
+  .pcard:hover .pcard__arrow {
+    background: var(--sun);
+    transform: rotate(45deg);
+  }
+
+  /* FUNDRAISER */
+  .fr {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(28px, 5vw, 72px);
+    align-items: center;
+    background: #efe6d4;
+    border-radius: var(--r-lg);
+    padding: clamp(20px, 3vw, 40px);
+  }
+  .fr__img {
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    aspect-ratio: 1;
+  }
+  .fr__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .fr__body h2 {
+    margin: 18px 0 16px;
+  }
+  .fr__who {
+    font-weight: 750;
+    font-size: 1.1rem;
+  }
+  .fr__body > p:not(.fr__who) {
+    color: var(--ink-2);
+  }
+  .fr__goal {
+    background: var(--paper);
+    border-radius: var(--r);
+    padding: 20px 24px;
+    margin: 28px 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .fr__goal span {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .fr__goal b {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .fr__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+  }
+
+  /* WAYS */
+  .ways__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .way {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-radius: var(--r-lg);
+    padding: clamp(28px, 3vw, 44px);
+    min-height: 360px;
+    overflow: hidden;
+    transition: box-shadow 0.5s;
+  }
+  .way:hover {
+    box-shadow: var(--shadow-lg);
+  }
+  .way--0 {
+    background: var(--sun);
+  }
+  .way--1 {
+    background: var(--ink);
+    color: #fff;
+  }
+  .way--2 {
+    background: var(--paper);
+    box-shadow: var(--shadow);
+  }
+  .way__icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.55);
+    margin-bottom: auto;
+    transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .way--1 .way__icon {
+    background: var(--sun);
+    color: var(--ink);
+  }
+  .way--2 .way__icon {
+    background: var(--sun-soft);
+  }
+  .way:hover .way__icon {
+    transform: scale(1.12) rotate(-12deg);
+  }
+  .way h3 {
+    font-size: clamp(1.4rem, 2vw, 1.9rem);
+    margin-top: 40px;
+  }
+  .way p {
+    opacity: 0.8;
+  }
+  .way__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    margin-top: 8px;
+  }
+  .way__cta :global(svg) {
+    transition: transform 0.4s var(--ease);
+  }
+  .way:hover .way__cta :global(svg) {
+    transform: translateX(6px);
+  }
+
+  /* NEWS */
+  .news__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .news__grid > :global(:first-child) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  /* PRESS */
+  .press__inner {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 24px;
+  }
+  .press__col {
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: clamp(24px, 3vw, 40px);
+    box-shadow: var(--shadow);
+  }
+  .press__title {
+    margin-bottom: 24px;
+  }
+  .press__videos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .video {
+    position: relative;
+    border-radius: var(--r);
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    background: var(--ink);
+    display: block;
+  }
+  .video :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    transition: transform 0.8s var(--ease), opacity 0.4s;
+  }
+  .video:hover :global(img) {
+    transform: scale(1.06);
+    opacity: 0.6;
+  }
+  .video__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--sun);
+    display: grid;
+    place-items: center;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .video:hover .video__play {
+    transform: scale(1.15);
+  }
+  .video__title {
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    right: 12px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+  }
+  .partners {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .partner {
+    background: var(--bg);
+    border-radius: var(--r);
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    filter: grayscale(1);
+    opacity: 0.75;
+    transition: filter 0.4s, opacity 0.4s, transform 0.5s var(--ease);
+  }
+  .partner:hover {
+    filter: none;
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+  .partner :global(img) {
+    max-height: 56px;
+    width: auto;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .news__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .press__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 900px) {
+    .hero {
+      min-height: auto;
+    }
+    .hero__inner,
+    .about__grid,
+    .fr {
+      grid-template-columns: 1fr;
+    }
+    .hero__collage {
+      max-width: 560px;
+      margin-inline: auto;
+    }
+    .about__cats {
+      position: static;
+    }
+    .projects__grid,
+    .ways__grid {
+      grid-template-columns: 1fr;
+    }
+    .way {
+      min-height: 0;
+    }
+    .stats__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .stat:nth-child(2) {
+      border-right: 0;
+    }
+    .stat:nth-child(-n + 2) {
+      border-bottom: 1px solid rgba(22, 22, 27, 0.12);
+    }
+  }
+  @media (max-width: 600px) {
+    .about__help,
+    .news__grid,
+    .press__videos {
+      grid-template-columns: 1fr;
+    }
+    .news__grid > :global(:first-child) {
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .hero__note {
+      display: none;
+    }
+    .stat b {
+      font-size: 2.2rem;
+    }
+  }
+</style>

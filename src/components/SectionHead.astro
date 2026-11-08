@@ -1,0 +1,55 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  text?: string;
+  center?: boolean;
+}
+const { eyebrow, title, text, center = false } = Astro.props;
+---
+
+<div class:list={['shead', { 'shead--center': center }]}>
+  <div class="shead__main">
+    {eyebrow && <p class="eyebrow" data-reveal="fade">{eyebrow}</p>}
+    <h2 data-split>{title}</h2>
+    {text && <p class="lead shead__text" data-reveal>{text}</p>}
+  </div>
+  <div class="shead__aside" data-reveal><slot /></div>
+</div>
+
+<style>
+  .shead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+  .shead h2 {
+    max-width: 18ch;
+  }
+  .shead__text {
+    margin-top: 20px;
+    max-width: 620px;
+  }
+  .shead--center {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .shead--center h2 {
+    margin-inline: auto;
+  }
+  .shead--center .shead__text {
+    margin-inline: auto;
+  }
+  .shead__aside:empty {
+    display: none;
+  }
+  @media (max-width: 760px) {
+    .shead {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

@@ -1,0 +1,534 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import { img } from '../data/images';
+import { letters, press, helpTypes, site } from '../data/site';
+import { fmtDate, cleanTitle } from '../data/format';
+
+const news = await getCollection('news');
+const byId = (id: string) => news.find((n) => n.id === id);
+
+// Вехи фонда — реальные события из новостей
+const milestones = [
+  { id: 'my-otkrylis-blagotvoritelnyj-fond-lyudi-vmeste-nachinaet-svoyu-rabotu', text: 'Фонд «Люди Вместе» официально начинает работу.' },
+  { id: 'blagotvoritelnaya-donorskaya-akcziya', text: 'Первая благотворительная донорская акция фонда.' },
+  { id: 'peterburgskij-dnevnik-osvetil-deyatelnost-bf-lyudi-vmeste', text: 'О работе фонда рассказывает «Петербургский дневник».' },
+  { id: 'telekanal-sankt-peterburg-osvetil-proekt-vremya-pomogat', text: 'Телеканал «Санкт-Петербург» показывает сюжет о проекте «Время помогать».' },
+  { id: 'den-besplatnoj-yuridicheskoj-pomoshhi-dlya-uchastnikov-svo-i-ih-semej', text: 'День бесплатной юридической помощи для участников СВО и их семей.' },
+  { id: 'pervyj-konczert-bf-lyudi-vmeste-my-eto-sdelali', text: 'Первый концерт БФ «Люди Вместе».' },
+  { id: 'mezhdunarodnyj-forum-starshee-pokolenie', text: 'Участие в Международном форуме «Старшее поколение».' },
+]
+  .map((m) => ({ ...m, post: byId(m.id) }))
+  .filter((m) => m.post)
+  .sort((a, b) => a.post!.data.date.valueOf() - b.post!.data.date.valueOf());
+
+const values = [
+  { icon: 'users', title: 'Единство', text: 'Объединяем тех, кто ищет поддержку, и тех, кто хочет помогать.' },
+  { icon: 'heart', title: 'Забота', text: 'Каждый, кто обратился в фонд, получает неравнодушие, поддержку и надежду.' },
+  { icon: 'sparkles', title: 'Комплексность', text: 'Психологическая, юридическая, медицинская и социальная помощь — в одном месте.' },
+  { icon: 'file', title: 'Открытость', text: 'Документы и реквизиты фонда открыто опубликованы на сайте.' },
+];
+---
+
+<BaseLayout title="О нас" description="О благотворительном фонде «Люди Вместе»: миссия, ценности, история, пресса и благодарственные письма.">
+  <PageHero
+    title="Вместе люди могут всё"
+    crumb="О нас"
+    lead="Мы объединяем тех, кто нуждается в помощи, и тех, кто готов помогать. Вместе мы можем больше."
+    image={img('banner_8.jpg')}
+  />
+
+  <section class="section">
+    <div class="container mission">
+      <div>
+        <p class="eyebrow" data-reveal="fade">О фонде «Люди Вместе»</p>
+        <p class="mission__big" data-scrub-text>
+          Фонд создан для того, чтобы объединять сердца тех, кто ищет поддержку, и тех, кто хочет помогать. Мы верим,
+          что настоящее единство рождается из заботы и участия.
+        </p>
+      </div>
+      <div class="mission__text" data-reveal>
+        <p>
+          Фонд «Люди Вместе» направлен на то, чтобы восполнять пробелы в социальной поддержке и помогать людям,
+          оказавшимся в трудной жизненной ситуации. Мы обращаем внимание на те сферы, которые чаще всего остаются без
+          должного внимания, и создаём систему комплексной помощи: психологической, юридической, медицинской и
+          социальной.
+        </p>
+        <h3>Приоритетные категории поддержки</h3>
+        <ul class="ticks">
+          <li>участники СВО и их семьи</li>
+          <li>родители детей с инвалидностью (ОВЗ)</li>
+          <li>онкобольные</li>
+          <li>пенсионеры</li>
+        </ul>
+        <p>
+          Мы не просто оказываем адресную помощь — мы стремимся вернуть людям веру в добро, внимание и человеческое
+          участие. Каждый человек, обратившийся в фонд, получает неравнодушие, поддержку и надежду.
+        </p>
+        <blockquote class="mission__quote">
+          <Icon name="quote" size={34} />
+          <p>Наша миссия — напомнить, что вместе люди могут всё.</p>
+          <cite>Президент фонда — {site.president}</cite>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="values" data-stagger>
+        {
+          values.map((v) => (
+            <div class="value" data-tilt>
+              <span class="value__icon">
+                <Icon name={v.icon} size={28} />
+              </span>
+              <h3>{v.title}</h3>
+              <p>{v.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow="История" title="Путь фонда" text="Ключевые события — от открытия до сегодняшнего дня. Нажмите, чтобы прочитать подробнее." />
+      <ol class="timeline">
+        <span class="timeline__line" aria-hidden="true"><span data-grow></span></span>
+        {
+          milestones.map((m, i) => (
+            <li class:list={['tl', { 'tl--right': i % 2 }]} data-reveal>
+              <a href={`/news/${m.id}/`} class="tl__card">
+                {m.post!.data.cover && (
+                  <div class="tl__img">
+                    <Image src={m.post!.data.cover} alt="" widths={[300, 500]} sizes="240px" />
+                  </div>
+                )}
+                <div>
+                  <time>{fmtDate(m.post!.data.date)}</time>
+                  <h3>{cleanTitle(m.post!.data.title)}</h3>
+                  <p>{m.text}</p>
+                </div>
+              </a>
+              <span class="tl__dot" aria-hidden="true" />
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <SectionHead eyebrow="Пресса о фонде" title="О нас рассказывают" />
+      <div class="press" data-stagger>
+        {
+          press.map((p) => (
+            <a href={p.video} class="pvideo" data-lightbox="press" data-type="video" data-caption={p.title}>
+              <Image src={img('logo-spb.jpg')} alt="" widths={[500, 800]} sizes="(max-width: 760px) 100vw, 50vw" />
+              <span class="pvideo__play">
+                <Icon name="play" size={28} />
+              </span>
+              <span class="pvideo__title">{p.title}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHead
+        eyebrow="Благодарственные письма"
+        title="Самые искренние оценки нашей работы"
+        text="Письма с благодарностью от тех, кому мы помогаем, и от организаций, с которыми работаем."
+      />
+      <div class="letters" data-stagger>
+        {
+          letters.map((l, i) => (
+            <a href={img(l).src} class="letter" data-lightbox="letters" style={`--r:${(i % 2 ? 1 : -1) * (1 + (i % 3))}deg`}>
+              <Image src={img(l)} alt="Благодарственное письмо фонду «Люди Вместе»" widths={[300, 500]} sizes="(max-width: 760px) 50vw, 25vw" />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="join" data-reveal="scale">
+        <div>
+          <h2>Присоединиться к добрым делам</h2>
+          <p class="lead">Помогите делом, временем, вниманием или пожертвованием.</p>
+        </div>
+        <div class="join__btns">
+          <a href="/kak-pomoch/" class="btn" data-magnetic>Как помочь <Icon name="arrow" class="arrow" /></a>
+          <a href="#request" class="btn btn--light" data-magnetic>Оставить заявку</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .mission {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(32px, 6vw, 96px);
+  }
+  .mission__big {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.8vw, 2.5rem);
+    line-height: 1.25;
+    font-weight: 500;
+    position: sticky;
+    top: calc(var(--header-h) + 32px);
+  }
+  .mission__text {
+    color: var(--ink-2);
+  }
+  .mission__text h3 {
+    color: var(--ink);
+    margin: 32px 0 16px;
+  }
+  .ticks {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px;
+    display: grid;
+    gap: 10px;
+  }
+  .ticks li {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: var(--paper);
+    padding: 14px 18px;
+    border-radius: var(--r-sm);
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .ticks li::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--sun);
+    box-shadow: 0 0 0 4px var(--sun-soft);
+    flex: none;
+  }
+  .mission__quote {
+    margin: 36px 0 0;
+    background: var(--sun);
+    color: var(--ink);
+    border-radius: var(--r-lg);
+    padding: 32px;
+  }
+  .mission__quote p {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    line-height: 1.3;
+    margin: 12px 0;
+  }
+  .mission__quote cite {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.9rem;
+    opacity: 0.75;
+  }
+
+  .values {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .value {
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: 32px 28px;
+    box-shadow: var(--shadow);
+  }
+  .value__icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    background: var(--sun-soft);
+    display: grid;
+    place-items: center;
+    margin-bottom: 20px;
+  }
+  .value h3 {
+    margin-bottom: 8px;
+  }
+  .value p {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+
+  .timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .timeline__line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--bg-2);
+    translate: -50% 0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .timeline__line span {
+    position: absolute;
+    inset: 0;
+    background: var(--sun-2);
+    transform-origin: top;
+  }
+  .tl {
+    position: relative;
+    width: 50%;
+    padding-right: 48px;
+  }
+  .tl + .tl {
+    margin-top: -56px;
+  }
+  .tl--right {
+    margin-left: 50%;
+    padding-right: 0;
+    padding-left: 48px;
+  }
+  .tl__dot {
+    position: absolute;
+    top: 36px;
+    right: -11px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--sun);
+    border: 5px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--sun-2);
+  }
+  .tl--right .tl__dot {
+    right: auto;
+    left: -11px;
+  }
+  .tl__card {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 20px;
+    background: var(--paper);
+    border-radius: var(--r);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    transition: transform 0.5s var(--ease), box-shadow 0.5s;
+  }
+  .tl__card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .tl__img {
+    border-radius: var(--r-sm);
+    overflow: hidden;
+    aspect-ratio: 1;
+  }
+  .tl__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tl__card time {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--sun-2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tl__card h3 {
+    font-size: 1.05rem;
+    margin: 6px 0;
+  }
+  .tl__card p {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+  }
+
+  .press {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .pvideo {
+    position: relative;
+    display: block;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: var(--ink);
+  }
+  .pvideo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+    transition: transform 0.8s var(--ease), opacity 0.4s;
+  }
+  .pvideo:hover :global(img) {
+    transform: scale(1.05);
+    opacity: 0.55;
+  }
+  .pvideo__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--sun);
+    display: grid;
+    place-items: center;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .pvideo__play::after {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    border: 2px solid var(--sun);
+    animation: ring 2s infinite;
+  }
+  @keyframes ring {
+    to {
+      inset: -30px;
+      opacity: 0;
+    }
+  }
+  .pvideo:hover .pvideo__play {
+    transform: scale(1.12);
+  }
+  .pvideo__title {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 20px;
+    color: #fff;
+    font-weight: 750;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
+  }
+
+  .letters {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+  }
+  .letter {
+    display: block;
+    background: #fff;
+    padding: 10px;
+    border-radius: var(--r-sm);
+    box-shadow: var(--shadow);
+    rotate: var(--r);
+    transition: rotate 0.6s var(--ease), transform 0.6s var(--ease), box-shadow 0.6s;
+  }
+  .letter:hover {
+    rotate: 0deg;
+    transform: translateY(-10px) scale(1.04);
+    box-shadow: var(--shadow-lg);
+    z-index: 2;
+    position: relative;
+  }
+  .letter :global(img) {
+    aspect-ratio: 1 / 1.41;
+    object-fit: cover;
+    object-position: top;
+    width: 100%;
+    border-radius: 6px;
+  }
+
+  .join {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    background: var(--sun);
+    border-radius: var(--r-lg);
+    padding: clamp(32px, 5vw, 64px);
+  }
+  .join .lead {
+    color: var(--ink);
+    margin-top: 12px;
+  }
+  .join__btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 1000px) {
+    .values {
+      grid-template-columns: 1fr 1fr;
+    }
+    .letters {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 860px) {
+    .mission {
+      grid-template-columns: 1fr;
+    }
+    .mission__big {
+      position: static;
+    }
+    .timeline__line {
+      left: 11px;
+    }
+    .tl,
+    .tl--right,
+    .tl + .tl {
+      width: 100%;
+      margin-left: 0;
+      margin-top: 0;
+      padding: 0 0 0 44px;
+    }
+    .tl__dot,
+    .tl--right .tl__dot {
+      left: 0;
+      right: auto;
+    }
+    .press {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .values,
+    .letters {
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .value {
+      padding: 22px 18px;
+    }
+    .tl__card {
+      grid-template-columns: 1fr;
+    }
+    .tl__img {
+      aspect-ratio: 16 / 9;
+    }
+  }
+</style>

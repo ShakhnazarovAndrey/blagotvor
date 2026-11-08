@@ -1,0 +1,178 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import DonateBlock from '../components/DonateBlock.astro';
+import Faq from '../components/Faq.astro';
+import Feedback from '../components/Feedback.astro';
+import Icon from '../components/Icon.astro';
+import { img } from '../data/images';
+import { helpFormats, faq } from '../data/site';
+
+const icons = ['heart', 'bank', 'hand', 'sparkles'];
+const ctas = [
+  { href: '#donate', label: 'Пожертвовать' },
+  { href: '#request', label: 'Обсудить партнёрство' },
+  { href: '#request', label: 'Стать волонтёром' },
+  { href: '#request', label: 'Предложить помощь' },
+];
+---
+
+<BaseLayout title="Как помочь" description="Как помочь фонду «Люди Вместе»: пожертвование через СБП, банковские реквизиты, волонтёрство, партнёрство и помощь pro bono.">
+  <PageHero
+    title="Помогать можно по-разному"
+    crumb="Как помочь"
+    lead="Выберите формат, который вам ближе. Каждый может внести свой вклад."
+    image={img('pic_help.jpg')}
+  >
+    <div class="hero-btns" data-reveal data-delay="0.45">
+      <a href="#donate" class="btn btn--sun" data-magnetic><Icon name="heart" size={20} /> Пожертвовать</a>
+      <a href="#request" class="btn btn--ghost" data-magnetic>Стать волонтёром</a>
+    </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow="Форматы помощи" title="Каждый может внести свой вклад" />
+      <div class="formats" data-stagger>
+        {
+          helpFormats.map((f, i) => (
+            <article class="format" data-tilt>
+              <span class="format__n">0{i + 1}</span>
+              <span class="format__icon">
+                <Icon name={icons[i]} size={30} />
+              </span>
+              <h3>{f.title}</h3>
+              {f.note && <p class="format__note">{f.note}</p>}
+              <p>{f.text}</p>
+              <a href={ctas[i].href} class="link-arrow">
+                {ctas[i].label} <Icon name="arrow" size={18} />
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <DonateBlock />
+
+  <section class="section">
+    <div class="container faq-wrap">
+      <div>
+        <SectionHead eyebrow="Вопросы и ответы" title="Частые вопросы" text="Не нашли ответ? Позвоните нам или оставьте заявку — мы всё расскажем." />
+        <div class="faq-img" data-clip>
+          <Image src={img('photo_th_2.jpg')} alt="Счастливая семья" widths={[400, 700]} sizes="(max-width: 900px) 100vw, 35vw" />
+        </div>
+      </div>
+      <Faq items={faq} />
+    </div>
+  </section>
+
+  <Feedback />
+</BaseLayout>
+
+<style>
+  .hero-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .formats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .format {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: 32px 26px;
+    box-shadow: var(--shadow);
+  }
+  .format:nth-child(2) {
+    background: var(--ink);
+    color: #fff;
+  }
+  .format:nth-child(2) p {
+    color: rgba(255, 255, 255, 0.75);
+  }
+  .format:nth-child(3) {
+    background: var(--sun);
+  }
+  .format__n {
+    position: absolute;
+    top: 28px;
+    right: 26px;
+    font-family: var(--font-display);
+    opacity: 0.4;
+  }
+  .format__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--sun-soft);
+    display: grid;
+    place-items: center;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+  .format:nth-child(3) .format__icon {
+    background: #fff;
+  }
+  .format p {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+  .format__note {
+    font-style: italic;
+    font-size: 0.82rem !important;
+    opacity: 0.8;
+  }
+  .format .link-arrow {
+    margin-top: auto;
+    width: fit-content;
+  }
+  .format:nth-child(3) .link-arrow {
+    border-color: var(--ink);
+  }
+  .faq-wrap {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+  .faq-img {
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    aspect-ratio: 4 / 3.4;
+  }
+  .faq-img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (max-width: 1100px) {
+    .formats {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 900px) {
+    .faq-wrap {
+      grid-template-columns: 1fr;
+    }
+    .faq-img {
+      display: none;
+    }
+  }
+  @media (max-width: 560px) {
+    .formats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,97 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  items: { q: string; a: string }[];
+}
+const { items } = Astro.props;
+---
+
+<div class="faq" data-stagger>
+  {
+    items.map((it, i) => (
+      <details class="acc" data-acc open={i === 0}>
+        <summary>
+          <span class="acc__num">{String(i + 1).padStart(2, '0')}</span>
+          <span class="acc__q">{it.q}</span>
+          <span class="acc__icon">
+            <Icon name="plus" />
+          </span>
+        </summary>
+        <div class="acc__body">
+          <p>{it.a}</p>
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .acc {
+    background: var(--paper);
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+    transition: background 0.4s;
+  }
+  .acc[open] {
+    background: var(--sun-soft);
+  }
+  summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 26px;
+    cursor: pointer;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .acc__num {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .acc__q {
+    flex: 1;
+    font-weight: 750;
+    font-size: clamp(1rem, 1.2vw, 1.15rem);
+  }
+  .acc__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: grid;
+    place-items: center;
+    flex: none;
+    transition:
+      transform 0.5s var(--ease),
+      background 0.3s;
+  }
+  .acc[open] .acc__icon {
+    transform: rotate(135deg);
+    background: var(--ink);
+    color: #fff;
+  }
+  .acc__body {
+    overflow: hidden;
+  }
+  .acc__body p {
+    padding: 0 26px 24px 70px;
+    color: var(--ink-2);
+    max-width: 820px;
+  }
+  @media (max-width: 560px) {
+    .acc__num {
+      display: none;
+    }
+    .acc__body p {
+      padding-left: 26px;
+    }
+  }
+</style>

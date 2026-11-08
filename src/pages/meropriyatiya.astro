@@ -1,0 +1,247 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import { img } from '../data/images';
+import { events, eventGallery } from '../data/site';
+import { fmtDate } from '../data/format';
+
+const now = new Date();
+const list = events
+  .map((e) => ({ ...e, d: new Date(e.date), past: new Date(e.date) < now }))
+  .sort((a, b) => b.d.valueOf() - a.d.valueOf());
+const hasUpcoming = list.some((e) => !e.past);
+---
+
+<BaseLayout title="Мероприятия" description="Мероприятия благотворительного фонда «Люди Вместе»: встречи, акции, праздники.">
+  <PageHero
+    title="Добро живёт рядом"
+    crumb="Мероприятия"
+    lead="Наши мероприятия объединяют людей, вдохновляют помогать и дают почувствовать, что добро действительно рядом."
+    image={img('g_fish_1.jpg')}
+  />
+
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow={hasUpcoming ? 'Ближайшие события' : 'События фонда'} title="Встречи и акции">
+        <a href="/news/" class="btn btn--ghost" data-magnetic>Хроника в новостях <Icon name="arrow" class="arrow" /></a>
+      </SectionHead>
+      <div class="events" data-stagger>
+        {
+          list.map((e) => (
+            <article class:list={['ev', { 'ev--past': e.past }]}>
+              <div class="ev__date">
+                <b>{e.d.getDate()}</b>
+                <span>{fmtDate(e.d).split(' ').slice(1).join(' ')}</span>
+                {e.past ? <em>прошло</em> : <em class="soon">скоро</em>}
+              </div>
+              <div class="ev__img">
+                <Image src={img(e.image)} alt="" widths={[400, 700]} sizes="(max-width: 900px) 100vw, 30vw" />
+              </div>
+              <div class="ev__body">
+                <h3>{e.title}</h3>
+                <p class="ev__fmt">
+                  <Icon name={/онлайн/i.test(e.format) ? 'monitor' : 'pin'} size={18} /> {e.format}
+                </p>
+                <p>{e.text}</p>
+                <a href="#request" class="link-arrow">
+                  {e.past ? 'Хочу на следующее' : 'Участвовать'} <Icon name="arrow" size={18} />
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="join" data-reveal="scale">
+        <h2>Присоединяйтесь к добрым событиям</h2>
+        <p class="lead">Каждое мероприятие — это шаг к тому, чтобы сделать мир теплее. Примите участие лично или поддержите нас пожертвованием.</p>
+        <div class="join__btns">
+          <a href="#request" class="btn" data-magnetic>Присоединиться</a>
+          <a href="/kak-pomoch/#donate" class="btn btn--light" data-magnetic><Icon name="heart" size={20} /> Поддержать</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHead eyebrow="Фотогалерея" title="Как проходят наши мероприятия" text="Эти кадры — живое доказательство того, что добро объединяет." />
+      <div class="gal" data-stagger>
+        {
+          eventGallery.map((g) => (
+            <a href={img(g).src} class="gal__item" data-lightbox="events">
+              <Image src={img(g)} alt="Фото с мероприятия фонда" widths={[400, 700]} sizes="(max-width: 760px) 50vw, 33vw" />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .events {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .ev {
+    display: grid;
+    grid-template-columns: 140px 320px 1fr;
+    gap: 28px;
+    align-items: center;
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: transform 0.5s var(--ease), box-shadow 0.5s;
+  }
+  .ev:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .ev__date {
+    background: var(--sun);
+    border-radius: var(--r);
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .ev--past .ev__date {
+    background: var(--bg-2);
+  }
+  .ev__date b {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    line-height: 1;
+  }
+  .ev__date span {
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .ev__date em {
+    font-style: normal;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 6px;
+    color: var(--muted);
+  }
+  .ev__date .soon {
+    color: var(--leaf);
+  }
+  .ev__img {
+    border-radius: var(--r);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+  }
+  .ev__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .ev__body h3 {
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    margin-bottom: 10px;
+  }
+  .ev__fmt {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .ev__body > p:not(.ev__fmt) {
+    color: var(--ink-2);
+  }
+  .join {
+    text-align: center;
+    background: var(--sun);
+    border-radius: var(--r-lg);
+    padding: clamp(40px, 6vw, 80px) clamp(24px, 5vw, 80px);
+  }
+  .join h2 {
+    max-width: 18ch;
+    margin-inline: auto;
+  }
+  .join .lead {
+    max-width: 620px;
+    margin: 16px auto 28px;
+    color: var(--ink);
+  }
+  .join__btns {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .gal {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 240px;
+    gap: 16px;
+  }
+  .gal__item {
+    border-radius: var(--r);
+    overflow: hidden;
+    display: block;
+  }
+  .gal__item:nth-child(1) {
+    grid-row: span 2;
+  }
+  .gal__item:nth-child(5) {
+    grid-column: span 2;
+  }
+  .gal__item :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1s var(--ease);
+  }
+  .gal__item:hover :global(img) {
+    transform: scale(1.07);
+  }
+  @media (max-width: 1000px) {
+    .ev {
+      grid-template-columns: 120px 1fr;
+    }
+    .ev__img {
+      display: none;
+    }
+  }
+  @media (max-width: 600px) {
+    .ev {
+      grid-template-columns: 1fr;
+    }
+    .ev__date {
+      aspect-ratio: auto;
+      flex-direction: row;
+      gap: 10px;
+      padding: 12px;
+    }
+    .ev__date b {
+      font-size: 1.6rem;
+    }
+    .ev__date em {
+      margin: 0 0 0 auto;
+    }
+    .gal {
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 160px;
+    }
+    .gal__item:nth-child(5) {
+      grid-column: span 2;
+    }
+  }
+</style>

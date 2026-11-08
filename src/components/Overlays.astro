@@ -1,0 +1,326 @@
+---
+import ContactForm from './ContactForm.astro';
+import Icon from './Icon.astro';
+---
+
+<!-- Модалка «Оставить заявку» — открывается любой ссылкой href="#request" -->
+<div class="modal" data-modal="request" role="dialog" aria-modal="true" aria-labelledby="request-title" aria-hidden="true">
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__box">
+    <button class="modal__close" data-close aria-label="Закрыть"><Icon name="close" /></button>
+    <p class="eyebrow">Мы на связи</p>
+    <h3 id="request-title" class="modal__title">Свяжитесь с нами</h3>
+    <p class="muted">Оставьте заявку, и наш менеджер свяжется с вами в ближайшее время.</p>
+    <ContactForm compact topic="Заявка (модальное окно)" />
+  </div>
+</div>
+
+<!-- Лайтбокс для галерей: data-lightbox="группа" на ссылках -->
+<div class="lightbox" data-lightbox-root aria-hidden="true">
+  <button class="lightbox__close" data-lb-close aria-label="Закрыть"><Icon name="close" size={28} /></button>
+  <button class="lightbox__nav lightbox__prev" data-lb-prev aria-label="Предыдущее"><Icon name="arrow-left" size={28} /></button>
+  <div class="lightbox__stage" data-lb-stage></div>
+  <button class="lightbox__nav lightbox__next" data-lb-next aria-label="Следующее"><Icon name="arrow" size={28} /></button>
+  <div class="lightbox__count" data-lb-count></div>
+</div>
+
+<!-- Плавающая кнопка -->
+<a href="/kak-pomoch/#donate" class="fab" data-fab aria-label="Помочь фонду">
+  <svg class="fab__ring" viewBox="0 0 100 100" aria-hidden="true">
+    <defs><path id="fab-circle" d="M50 50m-37 0a37 37 0 1 1 74 0a37 37 0 1 1-74 0"></path></defs>
+    <text><textPath href="#fab-circle">помочь • помочь • помочь • помочь • </textPath></text>
+  </svg>
+  <span class="fab__heart"><Icon name="heart" size={26} /></span>
+</a>
+
+<!-- Cookie -->
+<div class="cookie" data-cookie hidden>
+  <p>
+    Мы используем cookies, чтобы сайт был удобнее.
+    <a href="/privacy/">Подробнее</a>
+  </p>
+  <button class="btn btn--sun btn--sm" data-cookie-ok>Принять</button>
+</div>
+
+<style>
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .modal.is-open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(22, 22, 27, 0.55);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .modal.is-open .modal__backdrop {
+    opacity: 1;
+  }
+  .modal__box {
+    position: relative;
+    width: min(520px, 100%);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: clamp(24px, 4vw, 44px);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(40px) scale(0.96);
+    opacity: 0;
+    transition: all 0.5s var(--ease);
+  }
+  .modal.is-open .modal__box {
+    transform: none;
+    opacity: 1;
+  }
+  .modal__title {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    margin-bottom: 10px;
+  }
+  .modal__box > .muted {
+    margin-bottom: 24px;
+  }
+  .modal__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: grid;
+    place-items: center;
+    transition: transform 0.4s var(--ease), background 0.3s;
+  }
+  .modal__close:hover {
+    transform: rotate(90deg);
+    background: var(--sun);
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: rgba(14, 14, 18, 0.94);
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s, visibility 0s 0.35s;
+  }
+  .lightbox.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.35s;
+  }
+  .lightbox__stage {
+    width: min(92vw, 1400px);
+    height: 82dvh;
+    display: grid;
+    place-items: center;
+  }
+  .lightbox__stage :global(img),
+  .lightbox__stage :global(video) {
+    max-width: 100%;
+    max-height: 82dvh;
+    width: auto;
+    height: auto;
+    border-radius: var(--r-sm);
+    object-fit: contain;
+    animation: lb-in 0.45s var(--ease);
+  }
+  @keyframes lb-in {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+  }
+  .lightbox__close,
+  .lightbox__nav {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    transition: background 0.3s, color 0.3s;
+    z-index: 2;
+  }
+  .lightbox__close:hover,
+  .lightbox__nav:hover {
+    background: var(--sun);
+    color: var(--ink);
+  }
+  .lightbox__close {
+    top: 20px;
+    right: 20px;
+  }
+  .lightbox__prev {
+    left: 20px;
+    top: 50%;
+    translate: 0 -50%;
+  }
+  .lightbox__next {
+    right: 20px;
+    top: 50%;
+    translate: 0 -50%;
+  }
+  .lightbox__count {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    translate: -50% 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .lightbox.is-single .lightbox__nav,
+  .lightbox.is-single .lightbox__count {
+    display: none;
+  }
+  @media (max-width: 640px) {
+    .lightbox__nav {
+      top: auto;
+      bottom: 12px;
+      translate: none;
+    }
+  }
+
+  .fab {
+    position: fixed;
+    right: clamp(16px, 2.5vw, 32px);
+    bottom: clamp(16px, 2.5vw, 32px);
+    z-index: 40;
+    width: 96px;
+    height: 96px;
+    display: grid;
+    place-items: center;
+    transform: scale(0);
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .fab.is-visible {
+    transform: scale(1);
+  }
+  .fab__ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    animation: spin 14s linear infinite;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    fill: var(--ink);
+  }
+  .fab__heart {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--sun);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 10px 30px -8px rgba(255, 191, 0, 0.8);
+    transition: transform 0.4s var(--ease);
+  }
+  .fab:hover .fab__heart {
+    transform: scale(1.12);
+  }
+  .fab__heart :global(svg) {
+    animation: beat 1.6s ease-in-out infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes beat {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    15% {
+      transform: scale(1.18);
+    }
+    30% {
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.12);
+    }
+  }
+
+  .cookie {
+    position: fixed;
+    left: clamp(16px, 2.5vw, 32px);
+    bottom: clamp(16px, 2.5vw, 32px);
+    z-index: 41;
+    max-width: 440px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--r);
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    box-shadow: var(--shadow-lg);
+    animation: cookie-in 0.7s 1.5s var(--ease) both;
+  }
+  .cookie[hidden] {
+    display: none;
+  }
+  .cookie p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .cookie a {
+    color: var(--sun);
+    text-decoration: underline;
+  }
+  @keyframes cookie-in {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+  }
+  .cookie .btn {
+    flex: none;
+    white-space: nowrap;
+  }
+  @media (max-width: 560px) {
+    .cookie {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      max-width: none;
+      padding: 12px 14px;
+      gap: 12px;
+      font-size: 0.74rem;
+      border-radius: 18px;
+    }
+    .cookie .btn {
+      min-height: 38px;
+      padding: 8px 16px;
+    }
+    .fab {
+      width: 84px;
+      height: 84px;
+    }
+  }
+</style>

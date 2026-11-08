@@ -1,0 +1,256 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { site, requisites } from '../data/site';
+import qr from '../assets/site/qr-kod-pozhertovanie-1.png';
+---
+
+<section class="donate section" id="donate">
+  <div class="container">
+    <div class="donate__box">
+      <div class="donate__deco" aria-hidden="true">
+        <svg viewBox="0 0 200 200" data-draw><path d="M100 170C40 125 20 95 20 65a40 40 0 0 1 80-8 40 40 0 0 1 80 8c0 30-20 60-80 105Z" fill="none" stroke="currentColor" stroke-width="3"></path></svg>
+      </div>
+      <div class="donate__head">
+        <p class="eyebrow">Пожертвование</p>
+        <h2 data-split>Сделайте доброе дело прямо сейчас</h2>
+        <p class="lead">Каждая ваша поддержка — это реальный вклад в жизни людей, которым нужна помощь.</p>
+      </div>
+
+      <div class="donate__tabs" data-tabs>
+        <div class="tabs" role="tablist">
+          <span class="tabs__pill" data-tab-pill></span>
+          <button class="tabs__btn" role="tab" data-tab="sbp"><Icon name="qr" size={18} /> СБП / карта</button>
+          <button class="tabs__btn" role="tab" data-tab="rekvizity"><Icon name="bank" size={18} /> Реквизиты</button>
+        </div>
+
+        <div class="donate__panel" data-panel="sbp" role="tabpanel">
+          <div class="donate__sbp">
+            <div class="donate__qr" data-tilt>
+              <Image src={qr} alt="QR-код для пожертвования через СБП" widths={[360, 600]} sizes="360px" />
+            </div>
+            <div class="donate__sbp-text">
+              <h3>Помогать легко</h3>
+              <p>
+                Наведите камеру телефона на QR-код или нажмите кнопку — откроется приложение вашего банка. Перевод через
+                Систему быстрых платежей без комиссии.
+              </p>
+              <div class="donate__btns">
+                <a href={site.sbpLink} class="btn btn--sun" target="_blank" rel="noopener" data-magnetic>
+                  <Icon name="heart" size={20} /> Пожертвовать через СБП
+                </a>
+                <a href={site.sbpLink} class="btn btn--ghost" target="_blank" rel="noopener">
+                  <Icon name="card" size={20} /> Банковская карта
+                </a>
+              </div>
+              <p class="donate__note">
+                <Icon name="check" size={18} /> Каждый перевод направляется в целевой фонд проекта. Все отчёты доступны
+                на сайте.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="donate__panel" data-panel="rekvizity" role="tabpanel" hidden>
+          <dl class="req">
+            {
+              requisites.map((r) => (
+                <div class="req__row">
+                  <dt>{r.label}</dt>
+                  <dd>
+                    <span>{r.value}</span>
+                    <button class="req__copy" data-copy={r.value.replace(/ /g, r.label.includes('счёт') || r.label.includes('Корсч') ? '' : ' ')} aria-label={`Скопировать: ${r.label}`}>
+                      <Icon name="copy" size={16} />
+                      <Icon name="check" size={16} />
+                    </button>
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+          <a href="/docs/rekvizity-bf-sber.pdf" class="link-arrow" target="_blank" download>
+            <Icon name="download" size={18} /> Скачать реквизиты (PDF)
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .donate__box {
+    position: relative;
+    background: var(--paper);
+    border-radius: var(--r-lg);
+    padding: clamp(28px, 5vw, 72px);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .donate__deco {
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 260px;
+    color: var(--sun);
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  .donate__head {
+    max-width: 720px;
+    position: relative;
+  }
+  .donate__head .lead {
+    margin-top: 18px;
+  }
+  .tabs {
+    position: relative;
+    display: inline-flex;
+    padding: 6px;
+    background: var(--bg);
+    border-radius: 999px;
+    margin: 36px 0 32px;
+    max-width: 100%;
+  }
+  .tabs__pill {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    height: calc(100% - 12px);
+    background: var(--ink);
+    border-radius: 999px;
+    transition:
+      transform 0.5s var(--ease),
+      width 0.5s var(--ease);
+  }
+  .tabs__btn {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    transition: color 0.4s;
+    white-space: nowrap;
+  }
+  .tabs__btn.is-active {
+    color: #fff;
+  }
+  :global(.tab-in) {
+    animation: tab-in 0.6s var(--ease);
+  }
+  @keyframes tab-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+  .donate__sbp {
+    display: grid;
+    grid-template-columns: minmax(240px, 380px) 1fr;
+    gap: clamp(28px, 4vw, 56px);
+    align-items: center;
+  }
+  .donate__qr {
+    background: #fff;
+    border-radius: var(--r);
+    padding: 12px;
+    box-shadow: var(--shadow-lg);
+  }
+  .donate__qr :global(img) {
+    border-radius: var(--r-sm);
+  }
+  .donate__sbp-text h3 {
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    margin-bottom: 14px;
+  }
+  .donate__sbp-text > p {
+    color: var(--ink-2);
+  }
+  .donate__btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .donate__note {
+    display: flex;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .donate__note :global(svg) {
+    flex: none;
+    color: var(--leaf);
+    margin-top: 3px;
+  }
+
+  .req {
+    margin: 0 0 28px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 40px;
+  }
+  .req__row {
+    padding: 14px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .req__row:last-child {
+    grid-column: 1 / -1;
+  }
+  .req dt {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .req dd {
+    margin: 4px 0 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .req__copy {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--bg);
+    display: grid;
+    place-items: center;
+    transition: background 0.3s;
+  }
+  .req__copy:hover {
+    background: var(--sun);
+  }
+  .req__copy :global(svg:last-child) {
+    display: none;
+  }
+  .req__copy:global(.is-copied) {
+    background: var(--leaf);
+    color: #fff;
+  }
+  .req__copy:global(.is-copied) :global(svg:first-child) {
+    display: none;
+  }
+  .req__copy:global(.is-copied) :global(svg:last-child) {
+    display: block;
+  }
+  @media (max-width: 860px) {
+    .donate__sbp {
+      grid-template-columns: 1fr;
+    }
+    .donate__qr {
+      max-width: 380px;
+    }
+    .req {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

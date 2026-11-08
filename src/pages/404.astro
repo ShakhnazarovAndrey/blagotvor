@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<BaseLayout title="Страница не найдена">
+  <section class="nf">
+    <div class="container nf__inner">
+      <div class="nf__num" aria-hidden="true">
+        <span>4</span><span class="nf__heart" data-float><Icon name="heart" size={120} /></span><span>4</span>
+      </div>
+      <h1 data-split="load">Такой страницы нет</h1>
+      <p class="lead" data-reveal>Возможно, она переехала. Зато добрые дела — на месте.</p>
+      <div class="nf__btns" data-reveal>
+        <a href="/" class="btn btn--sun" data-magnetic>На главную</a>
+        <a href="/news/" class="btn btn--ghost" data-magnetic>Новости фонда</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    min-height: 90vh;
+    display: grid;
+    place-items: center;
+    padding-top: var(--header-h);
+    text-align: center;
+  }
+  .nf__num {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(6rem, 18vw, 14rem);
+    line-height: 1;
+  }
+  .nf__heart {
+    width: 0.9em;
+    height: 0.9em;
+    border-radius: 50%;
+    background: var(--sun);
+    display: grid;
+    place-items: center;
+  }
+  .nf__heart :global(svg) {
+    width: 50%;
+    height: 50%;
+  }
+  .nf h1 {
+    margin: 24px 0 12px;
+  }
+  .nf__btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+</style>
